@@ -44,7 +44,7 @@ export function Sidebar() {
               key={route.href}
               href={route.href}
               className={cn(
-                "flex items-center gap-x-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                "flex items-center gap-x-2 rounded-lg px-4 py-2 text-base leading-7 font-ibm-plex  dark:text-slate-100 transition-colors hover:bg-accent hover:text-accent-foreground",
                 pathname === route.href ? "bg-accent" : "transparent"
               )}
             >

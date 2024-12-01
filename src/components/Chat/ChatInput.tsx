@@ -8,7 +8,6 @@ interface Props {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
 }
-
 export default function ChatInput({ onSendMessage, isLoading }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,15 +21,20 @@ export default function ChatInput({ onSendMessage, isLoading }: Props) {
 
   return (
     <div className="p-4">
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex items-center gap-4">
         <Input
           id="message"
           name="message"
           placeholder="Type your message..."
           disabled={isLoading}
-          className="flex-1 font-ibm-plex text-base"
+          className="flex-1 font-ibm-plex text-base h-12"
         />
-        <Button type="submit" size="icon" disabled={isLoading}>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={isLoading}
+          className="h-11 w-11 shrink-0"
+        >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -41,28 +45,3 @@ export default function ChatInput({ onSendMessage, isLoading }: Props) {
     </div>
   );
 }
-
-// <div className="p-4 border-t border-border bg-card/50 backdrop-blur">
-// <form onSubmit={handleSubmit} className="flex gap-2 max-w-4xl mx-auto">
-//   <Input
-//     id="message"
-//     name="message"
-//     placeholder="Type your message..."
-//     disabled={isLoading}
-//     className="flex-1 font-ibm-plex text-base"
-//   />
-//   <Button
-//     type="submit"
-//     size="icon"
-//     disabled={isLoading}
-//     className="bg-blue-500 hover:bg-blue-600 text-white"
-//   >
-//     {isLoading ? (
-//       <Loader2 className="h-4 w-4 animate-spin" />
-//     ) : (
-//       <Send className="h-4 w-4" />
-//     )}
-//   </Button>
-// </form>
-// </div>
-// );

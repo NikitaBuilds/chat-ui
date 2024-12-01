@@ -6,7 +6,9 @@ export function Logo() {
       <div className="relative w-6 h-6">
         <Brain className="w-6 h-6" />
       </div>
-      <span className="font-semibold text-lg">AI Chat</span>
+      <span className="text-xl font-semibold leading-7 font-ibm-plex dark:text-slate-100">
+        AI Chat
+      </span>
     </div>
   );
 }
