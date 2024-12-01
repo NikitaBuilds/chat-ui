@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Logo } from "../ui/logo";
+import { UserMenu } from "./UserMenu";
 
 const routes = [
   {
@@ -28,13 +29,12 @@ const routes = [
   //     href: "/library",
   //   },
 ];
-
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
     <div className="flex h-full w-[250px] flex-col border-r bg-background">
-      <div className="p-3">
+      <div className="p-3 flex-1">
         <div className="mb-2 px-4 py-2">
           <Logo />
         </div>
@@ -54,6 +54,7 @@ export function Sidebar() {
           ))}
         </div>
       </div>
+      <UserMenu />
     </div>
   );
 }

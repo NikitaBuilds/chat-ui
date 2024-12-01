@@ -1,9 +1,9 @@
 import { IBM_Plex_Sans } from "next/font/google";
 import type { Metadata } from "next";
-// import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { SessionProvider } from "@/components/providers/SessionProvider";
+import { RootLayoutContent } from "@/components/layout/RootLayoutContent";
 
 const ibmPlex = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -24,21 +24,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${ibmPlex.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="h-screen w-screen overflow-hidden">
-            <div className="flex h-full">
-              <Sidebar />
-              <main className="flex-1 overflow-y-auto bg-background">
-                {children}
-              </main>
-            </div>
-          </div>
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <RootLayoutContent>{children}</RootLayoutContent>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
