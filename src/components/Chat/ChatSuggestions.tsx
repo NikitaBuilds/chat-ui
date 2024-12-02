@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Message } from "@/types/chat";
 
 interface Props {
-  onSelect: (suggestion: string) => void;
+  onSelect: (message: string) => void;
   messages: Message[];
   isLoading: boolean;
 }
@@ -19,13 +19,7 @@ export default function ChatSuggestions({
   const suggestions = lastMessage?.suggestions || [];
 
   const handleSuggestionClick = (suggestion: string) => {
-    const inputElement = document.querySelector(
-      'input[name="message"]'
-    ) as HTMLInputElement;
-    if (inputElement) {
-      inputElement.value = suggestion;
-      inputElement.focus();
-    }
+    onSelect(suggestion);
   };
 
   if (isLoading) {
