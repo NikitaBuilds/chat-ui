@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/ui/logo";
 
@@ -22,6 +22,15 @@ export default function SignIn() {
 
   return (
     <div className="container relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <Button
+        variant="ghost"
+        className="absolute right-4 top-4 md:right-8 md:top-8"
+        onClick={() => (window.location.href = "/")}
+      >
+        {/* <User className="mr-2 h-4 w-4" /> */}
+        Continue as Guest
+      </Button>
+
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex">
         <div className="absolute inset-0 bg-zinc-900" />
         <div className="relative z-20 flex items-center text-lg font-medium">

@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { signOut, useSession } from "next-auth/react";
-import { LogOut, User } from "lucide-react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { LogIn, LogOut, MessageCircle, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,22 +12,47 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function UserMenu() {
+interface Props {
+  remainingMessages?: number;
+}
+
+export function UserMenu({ remainingMessages }: Props) {
   const { data: session } = useSession();
 
-  if (!session?.user) return null;
+  if (!session?.user) {
+    return (
+      <div className="h-[72px] border-t border-border">
+        <Button
+          variant="ghost"
+          className="h-full w-full px-5 justify-between"
+          onClick={() => signIn("google")}
+        >
+          <div className="flex items-center gap-2">
+            <User className="w-8 h-8" />
+            <div className="flex flex-col text-left">
+              <span className="text-sm font-medium">Guest User</span>
+              <span className="text-xs text-muted-foreground">
+                {remainingMessages} free messages remaining
+              </span>
+            </div>
+          </div>
+          <LogIn className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-5 border-t border-border">
+    <div className="h-[72px] border-t border-border">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-auto w-full p-0 justify-start">
+          <Button variant="ghost" className="h-full w-full px-5 justify-start">
             <div className="flex items-center gap-2">
               {session.user.image ? (
                 <img
                   src={session.user.image}
                   alt={session.user.name || "User"}
-                  className="w-8 h-8 rounded-full"
+                  className="w-8 h-8"
                 />
               ) : (
                 <User className="w-8 h-8" />

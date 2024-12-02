@@ -1,10 +1,16 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
+
+const MAX_FREE_MESSAGES = 3;
+const COOKIE_NAME = "guest_messages_count";
 
 const llm = new ChatOpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
@@ -26,32 +32,49 @@ const chatPrompt = ChatPromptTemplate.fromMessages([
 ]);
 
 const chain = RunnableSequence.from([chatPrompt, llm]);
-
 export async function POST(req: Request) {
   try {
     const { message, messages } = await req.json();
+    const cookieStore = await cookies();
+    const session = await getServerSession(authOptions);
 
-    const stream = await chain.stream({
-      message,
-      chat_history: messages.map((m: any) => ({
-        role: m.role === "user" ? "human" : "assistant",
-        content: m.content,
-      })),
-    });
+    // Check message limit for guests
+    if (!session?.user) {
+      const messageCount = parseInt(cookieStore.get(COOKIE_NAME)?.value || "0");
+      const remainingMessages = MAX_FREE_MESSAGES - messageCount;
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of stream) {
-          const content =
-            typeof chunk.content === "string" ? chunk.content : "";
-          controller.enqueue(encoder.encode(content));
+      if (messageCount >= MAX_FREE_MESSAGES) {
+        return NextResponse.json(
+          { error: "Message limit reached", remainingMessages: 0 },
+          { status: 403 }
+        );
+      }
+
+      // Create the response with stream
+      const response = new Response(
+        await getStreamingResponse(message, messages, chain),
+        {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "X-Remaining-Messages": (remainingMessages - 1).toString(),
+          },
         }
-        controller.close();
-      },
-    });
+      );
 
-    return new Response(readable, {
+      // Set cookie
+      response.headers.append(
+        "Set-Cookie",
+        `${COOKIE_NAME}=${messageCount + 1}; Max-Age=${
+          60 * 60 * 24 * 7
+        }; Path=/`
+      );
+
+      return response;
+    }
+
+    // For authenticated users, just return the streaming response
+    return new Response(await getStreamingResponse(message, messages, chain), {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
@@ -64,4 +87,29 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+}
+
+async function getStreamingResponse(
+  message: string,
+  messages: any[],
+  chain: any
+) {
+  const stream = await chain.stream({
+    message,
+    chat_history: messages.map((m: any) => ({
+      role: m.role === "user" ? "human" : "assistant",
+      content: m.content,
+    })),
+  });
+
+  const encoder = new TextEncoder();
+  return new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const content = typeof chunk.content === "string" ? chunk.content : "";
+        controller.enqueue(encoder.encode(content));
+      }
+      controller.close();
+    },
+  });
 }

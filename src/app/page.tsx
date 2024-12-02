@@ -6,11 +6,27 @@ import ChatMessages from "@/components/Chat/ChatMessages";
 import ChatSuggestions from "@/components/Chat/ChatSuggestions";
 import ChatInput from "@/components/Chat/ChatInput";
 import { Message } from "@/types/chat";
+import { RemainingMessages } from "@/components/Chat/RemainingMessages";
+import { useSession } from "next-auth/react";
+import { COOKIE_NAME } from "@/lib/utils/messageCounter";
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(
+    null
+  );
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (!session?.user) {
+      const messageCount = parseInt(
+        document.cookie.match(`${COOKIE_NAME}=(\\d+)`)?.[1] || "0"
+      );
+      setRemainingMessages(3 - messageCount);
+    }
+  }, [session]);
 
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
@@ -26,6 +42,27 @@ export default function ChatContainer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message, messages }),
       });
+
+      if (!session?.user) {
+        const remaining = response.headers.get("X-Remaining-Messages");
+        if (remaining) {
+          setRemainingMessages(parseInt(remaining));
+        }
+      }
+
+      if (response.status === 403) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "You've reached your free message limit. Sign in to continue chatting and unlock unlimited messages!",
+            id: crypto.randomUUID(),
+          },
+        ]);
+        setIsLoading(false);
+        return;
+      }
 
       if (!response.ok) throw new Error("Network response was not ok");
       const reader = response.body?.getReader();
@@ -101,8 +138,12 @@ export default function ChatContainer() {
   return (
     <div className="flex flex-col h-full">
       <ChatMessages messages={messages} />
-      <div className="mt-auto relative">
-        <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />
+      <div className="mt-auto">
+        <div className="mt-auto relative">
+          <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />
+        </div>
+        <RemainingMessages remainingMessages={remainingMessages} />
+
         <div className="relative bg-background/80 backdrop-blur-sm border-t border-border">
           <ChatSuggestions
             onSelect={handleSendMessage}
@@ -114,4 +155,13 @@ export default function ChatContainer() {
       </div>
     </div>
   );
+}
+
+{
+  /* <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />; */
+}
+
+{
+  /* <div className="mt-auto relative">
+<div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" /> */
 }

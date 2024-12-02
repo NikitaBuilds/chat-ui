@@ -20,8 +20,8 @@ export default function ChatInput({ onSendMessage, isLoading }: Props) {
   };
 
   return (
-    <div className="p-4">
-      <form onSubmit={handleSubmit} className="flex items-center gap-4">
+    <div className="h-[72px] p-4">
+      <form onSubmit={handleSubmit} className="flex items-center gap-4 h-full">
         <Input
           id="message"
           name="message"
@@ -33,7 +33,7 @@ export default function ChatInput({ onSendMessage, isLoading }: Props) {
           type="submit"
           size="icon"
           disabled={isLoading}
-          className="h-11 w-11 shrink-0"
+          className="h-10 w-10 shrink-0"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
