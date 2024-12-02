@@ -6,12 +6,14 @@ A modern, feature-rich chat application powered by GPT-4 Turbo and built with Ne
 
 ![AI Chat Assistant](public/preview.png)
 
+![alt text](<Screenshot 2024-12-02 at 00.25.01.png>)
+
 ## Tech Stack
 
 - **Framework**: Next.js 14
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
+- **UI Components**: Shadcn UI
 - **Authentication**: NextAuth.js
 - **AI Integration**: LangChain
 - **Animations**: Framer Motion
