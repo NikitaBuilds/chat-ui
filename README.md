@@ -64,7 +64,7 @@ This project is deployed on Vercel. You can see it live at: [AI Chat Assistant](
 
 1. Clone the repository:
 
-git clone https://github.com/yourusername/ai-chat-assistant.git
+git clone https://github.com/NikitaBuilds/chat-ui
 
 2. Install dependencies:
 
