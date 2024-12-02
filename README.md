@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Here's the markdown artifact without the code blocks formatting:
+
+# AI Chat Assistant
+
+A modern, feature-rich chat application powered by GPT-4 Turbo and built with Next.js 14.
+
+![AI Chat Assistant](public/preview.png)
+
+## Tech Stack
+
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Authentication**: NextAuth.js
+- **AI Integration**: LangChain
+- **Animations**: Framer Motion
+- **Markdown**: React Markdown
+- **Code Highlighting**: React Syntax Highlighter
+
+## Features
+
+### 🤖 Intelligent Conversations
+
+- Powered by GPT-4 Turbo for high-quality responses
+- Stream-based message delivery for real-time interactions
+- Smart message cleaning to maintain natural conversation flow
+- Markdown support with syntax highlighting for code blocks
+
+### 💡 Smart Suggestions
+
+- Dynamic follow-up questions generated after each response
+- Context-aware suggestions to keep conversations flowing
+- One-click suggestion insertion into the chat input
+
+### 🎨 Modern UI/UX
+
+- Clean, responsive design with Tailwind CSS
+- Smooth animations with Framer Motion
+- Dark mode support
+- Code syntax highlighting
+- Typing indicators and message streaming
+- IBM Plex Sans font for improved readability
+
+### 🔒 Authentication & User Management
+
+- Google OAuth integration
+- Free tier for guests (3 messages)
+- Unlimited messages for authenticated users
+- Seamless auth state management
+
+### ⚡ Technical Highlights
+
+- Built with Next.js 14 and TypeScript
+- Server-side streaming with Edge Runtime
+- LangChain for AI interactions
+- Real-time message count tracking
+- Responsive layout with Tailwind CSS
+- Component-based architecture
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
 
-```bash
+git clone https://github.com/yourusername/ai-chat-assistant.git
+
+2. Install dependencies:
+
+npm install
+
+3. Create a `.env.local` file with your environment variables:
+
+OPENAI_API_KEY=your_openai_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+
+4. Run the development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+src/
+├── app/ # Next.js app router
+├── components/ # React components
+│ ├── Chat/ # Chat-related components
+│ ├── layout/ # Layout components
+│ └── ui/ # Reusable UI components
+├── lib/ # Utility functions
+└── types/ # TypeScript types
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+MIT License - feel free to use this project for your own purposes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Acknowledgments
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Vercel](https://vercel.com) for the amazing Next.js framework
+- [OpenAI](https://openai.com) for the GPT-4 API
+- [LangChain](https://js.langchain.com) for the AI utilities
