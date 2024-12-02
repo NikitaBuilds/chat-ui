@@ -34,7 +34,7 @@ export default function ChatMessages({ messages }: Props) {
   }, [messages]);
 
   return (
-    <div className="h-full overflow-y-auto px-4 py-6 space-y-6">
+    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
       {messages.length === 0 ? (
         <WelcomeScreen />
       ) : (

@@ -18,24 +18,12 @@ export function RootLayoutContent({ children }: { children: React.ReactNode }) {
     <div className="h-screen w-screen overflow-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden md:flex h-full">
-        <Sidebar />
+        <Sidebar className="w-[250px] border-r" />
         <main className="flex-1 overflow-y-auto bg-background">{children}</main>
       </div>
 
       {/* Mobile Layout */}
       <div className="flex flex-col h-full md:hidden">
-        <div className="flex items-center border-b border-border p-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-72">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
-        </div>
         <main className="flex-1 overflow-y-auto bg-background">{children}</main>
       </div>
     </div>

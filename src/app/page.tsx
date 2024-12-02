@@ -9,6 +9,7 @@ import { Message } from "@/types/chat";
 import { RemainingMessages } from "@/components/Chat/RemainingMessages";
 import { useSession } from "next-auth/react";
 import { COOKIE_NAME } from "@/lib/utils/messageCounter";
+import { ChatHeader } from "@/components/Chat/ChatHeader";
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -19,6 +20,22 @@ export default function ChatContainer() {
   );
   const { data: session } = useSession();
 
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("chat_messages");
+    if (saved) {
+      setMessages(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("chat_messages", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Check remaining messages for guests
   useEffect(() => {
     if (!session?.user) {
       const messageCount = parseInt(
@@ -135,15 +152,20 @@ export default function ChatContainer() {
     }
   };
 
+  const handleNewChat = () => {
+    setMessages([]);
+    localStorage.removeItem("chat_messages");
+  };
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[100dvh]">
+      <ChatHeader onNewChat={handleNewChat} />
       <ChatMessages messages={messages} />
-      <div className="mt-auto">
-        <div className="mt-auto relative">
+      <div className="shrink-0">
+        <div className="relative">
           <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />
         </div>
         <RemainingMessages remainingMessages={remainingMessages} />
-
         <div className="relative bg-background/80 backdrop-blur-sm border-t border-border">
           <ChatSuggestions
             onSelect={handleSendMessage}
@@ -155,13 +177,4 @@ export default function ChatContainer() {
       </div>
     </div>
   );
-}
-
-{
-  /* <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />; */
-}
-
-{
-  /* <div className="mt-auto relative">
-<div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" /> */
 }

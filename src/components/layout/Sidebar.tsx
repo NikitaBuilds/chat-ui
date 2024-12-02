@@ -7,44 +7,34 @@ import { usePathname } from "next/navigation";
 import { Logo } from "../ui/logo";
 import { UserMenu } from "./UserMenu";
 
+interface SidebarProps {
+  className?: string;
+}
+
 const routes = [
   {
     label: "Home",
     icon: Home,
     href: "/",
   },
-  //   {
-  //     label: "Discover",
-  //     icon: Search,
-  //     href: "/discover",
-  //   },
-  //   {
-  //     label: "Spaces",
-  //     icon: Users,
-  //     href: "/spaces",
-  //   },
-  //   {
-  //     label: "Library",
-  //     icon: Library,
-  //     href: "/library",
-  //   },
 ];
-export function Sidebar() {
+
+export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-[250px] flex-col border-r bg-background">
-      <div className="p-3 flex-1">
-        <div className="mb-2 px-4 py-2">
+    <div className={cn("flex flex-col h-full", className)}>
+      <div className="flex-1">
+        <div className="mb-2 p-4">
           <Logo />
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 px-3">
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "flex items-center gap-x-2 rounded-lg px-4 py-2 text-base leading-7 font-ibm-plex  dark:text-slate-100 transition-colors hover:bg-accent hover:text-accent-foreground",
+                "flex items-center gap-x-2 rounded-lg px-4 py-2 text-base leading-7 font-ibm-plex dark:text-slate-100 transition-colors hover:bg-accent hover:text-accent-foreground",
                 pathname === route.href ? "bg-accent" : "transparent"
               )}
             >
