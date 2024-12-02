@@ -158,10 +158,12 @@ export default function ChatContainer() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh]">
+    <div className="flex flex-col h-full">
       <ChatHeader onNewChat={handleNewChat} />
-      <ChatMessages messages={messages} />
-      <div className="shrink-0">
+      <div className="flex-1 min-h-0">
+        <ChatMessages messages={messages} />
+      </div>
+      <div className="shrink-0 w-full">
         <div className="relative">
           <div className="absolute inset-x-0 bottom-full h-24 bg-gradient-to-t from-background to-transparent" />
         </div>
