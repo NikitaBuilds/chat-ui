@@ -45,10 +45,10 @@ export default function ChatMessages({ messages }: Props) {
               message.role === "user" ? "items-end" : "items-start"
             }`}
           >
-            <span className={`text-xs font-semibold mb-1 px-4 `}>
+            <span className={`text-xs font-semibold mb-1 px-4`}>
               {message.role === "user" ? "You" : "AI Assistant"}
             </span>
-            <div className={`rounded-lg px-4 py-1 max-w-[80%]`}>
+            <div className={`rounded-lg px-4 py-2 `}>
               {message.isStreaming && !isMarkdown(message.content) ? (
                 <p className="text-base leading-7 whitespace-pre-wrap">
                   {message.content}
