@@ -32,7 +32,8 @@ export function UserMenu({ remainingMessages }: Props) {
             <div className="flex flex-col text-left">
               <span className="text-sm font-medium">Guest User</span>
               <span className="text-xs text-muted-foreground">
-                {remainingMessages} free messages remaining
+                {/* {remainingMessages} free messages remaining */}
+                Sign in to continue
               </span>
             </div>
           </div>
