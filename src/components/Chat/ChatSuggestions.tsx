@@ -40,19 +40,21 @@ export default function ChatSuggestions({
       <span className="text-xs font-semibold mb-2 px-4 text-slate-600 dark:text-slate-400">
         Suggested follow-ups
       </span>
-      <div className="flex flex-wrap gap-2 mt-2">
-        {suggestions.map((suggestion, index) => (
-          <Button
-            key={index}
-            variant="outline"
-            size="sm"
-            onClick={() => handleSuggestionClick(suggestion)}
-            className="text-base leading-7 font-ibm-plex text-slate-700 dark:text-slate-300
-              hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            {suggestion}
-          </Button>
-        ))}
+      <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+        <div className="flex gap-2 mt-2 min-w-max px-1">
+          {suggestions.map((suggestion, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              size="sm"
+              onClick={() => handleSuggestionClick(suggestion)}
+              className="text-base leading-7 font-ibm-plex text-slate-700 dark:text-slate-300
+                hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
+            >
+              {suggestion}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   ) : null;
