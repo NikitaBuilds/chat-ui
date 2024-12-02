@@ -17,7 +17,8 @@ export function LimitReachedScreen() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold">Message Limit Reached</h2>
           <p className="text-muted-foreground">
-            You've used all your free messages. Sign in to continue chatting!
+            You&apos;ve used all your free messages. Sign in to continue
+            chatting!
           </p>
         </div>
         <Button onClick={() => signIn("google")} className="w-full">

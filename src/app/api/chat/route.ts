@@ -7,7 +7,7 @@ import {
 } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 const MAX_FREE_MESSAGES = 3;
 const COOKIE_NAME = "guest_messages_count";
