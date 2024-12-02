@@ -5,7 +5,7 @@ Here's the markdown artifact without the code blocks formatting:
 A modern, feature-rich chat application powered by GPT-4 Turbo and built with Next.js 14.
 
 Preview:
-![AI Chat Assistant](https://chatbot-shadcn-next-langchain.vercel.app/)
+[AI Chat Assistant](https://chatbot-shadcn-next-langchain.vercel.app/)
 
 ![alt text](<Screenshot 2024-12-02 at 00.25.01.png>)
 
