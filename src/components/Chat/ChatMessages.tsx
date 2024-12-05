@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { WelcomeScreen } from "./WelcomeScreen";
+import { Copy, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   messages: Message[];
@@ -14,10 +16,20 @@ export default function ChatMessages({ messages }: Props) {
   const [animatedWords, setAnimatedWords] = useState<Record<string, number>>(
     {}
   );
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const isMarkdown = (text: string) => {
-    // Check for common markdown patterns
     return /[#*`]|\[.*\]\(.*\)|```/.test(text);
+  };
+
+  const handleCopy = async (content: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   useEffect(() => {
@@ -48,7 +60,21 @@ export default function ChatMessages({ messages }: Props) {
             <span className={`text-xs font-semibold mb-1 px-4`}>
               {message.role === "user" ? "You" : "AI Assistant"}
             </span>
-            <div className={`rounded-lg px-4 py-2 `}>
+            <div className={`rounded-lg px-4 py-2 relative group`}>
+              {message.role === "assistant" && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="absolute -right-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleCopy(message.content, message.id!)}
+                >
+                  {copiedId === message.id ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
               {message.isStreaming && !isMarkdown(message.content) ? (
                 <p className="text-base leading-7 whitespace-pre-wrap">
                   {message.content}

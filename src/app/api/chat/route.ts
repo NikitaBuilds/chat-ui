@@ -1,4 +1,3 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import {
@@ -8,35 +7,42 @@ import {
 import { RunnableSequence } from "@langchain/core/runnables";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getModel } from "@/lib/langchain/models";
 
 const MAX_FREE_MESSAGES = 3;
 const COOKIE_NAME = "guest_messages_count";
 
-const llm = new ChatOpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  temperature: 1,
-  modelName: "gpt-4-turbo-preview",
-  streaming: true,
-});
-
-const chatPrompt = ChatPromptTemplate.fromMessages([
-  [
-    "system",
-    "You are a helpful AI assistant focused on providing practical knowledge and solutions. " +
+const getSystemPrompt = (model: string) => {
+  if (model === "claude") {
+    return "Respond naturally in conversational format.";
+  } else if (model === "groq") {
+    return (
+      "You are a helpful AI assistant focused on providing practical knowledge and solutions. " +
       "Respond naturally in conversational format.\n\n" +
       "Keep responses clear and concise, focusing on delivering accurate information " +
-      "in an easy-to-understand way.",
-  ],
-  new MessagesPlaceholder("chat_history"),
-  ["human", "{message}"],
-]);
+      "in an easy-to-understand way."
+    );
+  }
+  return (
+    "You are a helpful AI assistant focused on providing practical knowledge and solutions. " +
+    "Respond naturally in conversational format.\n\n" +
+    "Keep responses clear and concise, focusing on delivering accurate information " +
+    "in an easy-to-understand way."
+  );
+};
 
-const chain = RunnableSequence.from([chatPrompt, llm]);
 export async function POST(req: Request) {
   try {
-    const { message, messages } = await req.json();
+    const { message, messages, model = "gpt-4" } = await req.json();
     const cookieStore = await cookies();
     const session = await getServerSession(authOptions);
+    const llm = getModel(model);
+    const chatPrompt = ChatPromptTemplate.fromMessages([
+      ["system", getSystemPrompt(model)],
+      new MessagesPlaceholder("chat_history"),
+      ["human", "{message}"],
+    ]);
+    const chain = RunnableSequence.from([chatPrompt, llm]);
 
     // Check message limit for guests
     if (!session?.user) {

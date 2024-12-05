@@ -19,6 +19,9 @@ export default function ChatContainer() {
     null
   );
   const { data: session } = useSession();
+  const [currentModel, setCurrentModel] = useState<"gpt-4" | "claude" | "groq">(
+    "claude"
+  );
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function ChatContainer() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, messages }),
+        body: JSON.stringify({ message, messages, model: currentModel }),
       });
 
       if (!session?.user) {
@@ -121,6 +124,7 @@ export default function ChatContainer() {
                 ...messages,
                 { role: "assistant", content: accumulatedResponse },
               ],
+              model: currentModel, // Make sure this is passed
             }),
           });
 
@@ -157,9 +161,17 @@ export default function ChatContainer() {
     localStorage.removeItem("chat_messages");
   };
 
+  const handleModelChange = (model: "gpt-4" | "claude") => {
+    setCurrentModel(model);
+  };
+
   return (
     <div className="flex flex-col h-full relative">
-      <ChatHeader onNewChat={handleNewChat} />
+      <ChatHeader
+        onNewChat={handleNewChat}
+        currentModel={currentModel}
+        onModelChange={handleModelChange}
+      />
       <div className="flex-1 overflow-y-auto">
         <ChatMessages messages={messages} />
       </div>

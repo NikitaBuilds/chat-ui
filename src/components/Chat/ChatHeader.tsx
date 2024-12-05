@@ -8,12 +8,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Sidebar } from "../layout/Sidebar";
+import { ModelSelector } from "./ModelSelector";
 
 interface Props {
   onNewChat: () => void;
+  currentModel: "gpt-4" | "claude";
+  onModelChange: (model: "gpt-4" | "claude") => void;
 }
 
-export function ChatHeader({ onNewChat }: Props) {
+export function ChatHeader({ onNewChat, currentModel, onModelChange }: Props) {
   return (
     <div className="border-b border-border p-4 flex items-center gap-2">
       <Sheet>
@@ -35,6 +38,11 @@ export function ChatHeader({ onNewChat }: Props) {
           </div>
         </SheetContent>
       </Sheet>
+
+      <ModelSelector
+        currentModel={currentModel}
+        onModelChange={onModelChange}
+      />
 
       <div className="flex-1 flex justify-end">
         <Button
