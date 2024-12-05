@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ChatImage } from "@/types/chat";
 import { Loader2, Send } from "lucide-react";
 import { useRef, useEffect } from "react";
 
 interface Props {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, images?: ChatImage[]) => void;
   isLoading: boolean;
 }
 
@@ -26,13 +27,14 @@ export default function ChatInput({ onSendMessage, isLoading }: Props) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const input = form.elements.namedItem("message") as HTMLTextAreaElement;
-    if (input.value.trim()) {
-      onSendMessage(input.value);
-      input.value = "";
+    const form = e.target as HTMLFormElement;
+    const messageInput = form.message as HTMLTextAreaElement;
+    const message = messageInput.value.trim();
+    if (message) {
+      onSendMessage(message);
+      messageInput.value = "";
       resetHeight();
     }
   };

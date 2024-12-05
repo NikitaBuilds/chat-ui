@@ -1,15 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import ChatMessages from "@/components/Chat/ChatMessages";
 import ChatSuggestions from "@/components/Chat/ChatSuggestions";
 import ChatInput from "@/components/Chat/ChatInput";
-import { Message } from "@/types/chat";
+import { ChatImage, Message } from "@/types/chat";
 import { RemainingMessages } from "@/components/Chat/RemainingMessages";
 import { useSession } from "next-auth/react";
 import { COOKIE_NAME } from "@/lib/utils/messageCounter";
 import { ChatHeader } from "@/components/Chat/ChatHeader";
+import AttachedImages from "@/components/Chat/AttachedImages";
+import { useDropzone } from "react-dropzone";
+import { HumanMessage } from "@langchain/core/messages";
+
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,16 +63,57 @@ export default function ChatContainer() {
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
     const messageId = crypto.randomUUID();
+    const lastMessage = messages[messages.length - 1];
+    const images = lastMessage?.images || [];
+
+    // Convert images to base64
+    const processedImages = await Promise.all(
+      images.map(async (img) => {
+        if (img.file) {
+          const base64 = await fileToBase64(img.file);
+          return {
+            ...img,
+            base64,
+          };
+        }
+        return img;
+      })
+    );
+
     setMessages((prev) => [
-      ...prev,
-      { role: "user", content: message, id: messageId },
+      ...prev.filter((msg) => msg.id !== lastMessage?.id),
+      { role: "user", content: message, id: messageId, images },
     ]);
 
     try {
+      // Create message content based on whether there are images
+      const messageContent =
+        images.length > 0
+          ? [
+              {
+                type: "text",
+                text: message,
+              },
+              ...processedImages.map((img) => ({
+                type: "image_url",
+                image_url: img.base64 || img.url,
+              })),
+            ]
+          : message;
+
+      const base64ImageMessage = new HumanMessage({
+        content: messageContent,
+      });
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, messages, model: currentModel }),
+        body: JSON.stringify({
+          message: images.length > 0 ? base64ImageMessage : message,
+          messages,
+          model: currentModel,
+          isStreaming: true,
+        }),
       });
 
       if (!session?.user) {
@@ -151,6 +204,16 @@ export default function ChatContainer() {
       }
     } catch (error) {
       console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I apologize, but I encountered an error. Please try again or contact support if the issue persists.",
+          id: crypto.randomUUID(),
+          error: true,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -161,19 +224,70 @@ export default function ChatContainer() {
     localStorage.removeItem("chat_messages");
   };
 
-  const handleModelChange = (model: "gpt-4" | "claude") => {
+  const handleModelChange = (model: "gpt-4" | "claude" | "groq") => {
     setCurrentModel(model);
   };
 
+  const handleImagesAdded = (images: ChatImage[]) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: "",
+        id: crypto.randomUUID(),
+        images: images,
+      },
+    ]);
+  };
+
+  const handleImageRemove = (imageId: string) => {
+    setMessages((prev) =>
+      prev.map((msg) => ({
+        ...msg,
+        images: msg.images?.filter((img) => img.id !== imageId),
+      }))
+    );
+  };
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const processedImages: ChatImage[] = acceptedFiles.map((file) => ({
+        id: crypto.randomUUID(),
+        url: URL.createObjectURL(file),
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+      handleImagesAdded(processedImages);
+    },
+    [handleImagesAdded]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
+    },
+    noClick: true,
+    noKeyboard: true,
+  });
+
   return (
-    <div className="flex flex-col h-full relative">
+    <div {...getRootProps()} className="flex flex-col h-full relative">
+      <input {...getInputProps()} />
+      {isDragActive && (
+        <div className="absolute inset-0 z-50 bg-primary/5 flex items-center justify-center pointer-events-none">
+          <div className="text-lg font-medium text-primary">
+            Drop images here...
+          </div>
+        </div>
+      )}
       <ChatHeader
         onNewChat={handleNewChat}
         currentModel={currentModel}
         onModelChange={handleModelChange}
       />
       <div className="flex-1 overflow-y-auto">
-        <ChatMessages messages={messages} />
+        <ChatMessages messages={messages} onImageRemove={handleImageRemove} />
       </div>
       <div className="sticky bottom-0 w-full bg-background">
         <div className="relative">
@@ -181,6 +295,10 @@ export default function ChatContainer() {
         </div>
         <RemainingMessages remainingMessages={remainingMessages} />
         <div className="relative bg-background/80 backdrop-blur-sm border-t border-border">
+          <AttachedImages
+            messages={messages}
+            onImageRemove={handleImageRemove}
+          />
           <ChatSuggestions
             onSelect={handleSendMessage}
             messages={messages}

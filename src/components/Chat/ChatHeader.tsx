@@ -12,8 +12,8 @@ import { ModelSelector } from "./ModelSelector";
 
 interface Props {
   onNewChat: () => void;
-  currentModel: "gpt-4" | "claude";
-  onModelChange: (model: "gpt-4" | "claude") => void;
+  currentModel: "gpt-4" | "claude" | "groq";
+  onModelChange: (model: "gpt-4" | "claude" | "groq") => void;
 }
 
 export function ChatHeader({ onNewChat, currentModel, onModelChange }: Props) {
